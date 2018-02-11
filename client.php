@@ -10,10 +10,10 @@ $resultatNbClients = $connexion->query($requeteNbClients);
 $nbClient = $resultatNbClients->fetch(PDO::FETCH_COLUMN);
 
 //initialisation des variables pour la pagination
-// offset : décalage
 // limit : la quantité d'enregistrements qu'on va afficher par page
-$offset = 0;
+// offset : décalage
 $limit = 5;
+$offset = 0;
 
 //on compte le nombre de page
 $nbPages = ceil($nbClient/$limit);
@@ -31,6 +31,8 @@ echo "<table class='table table-striped'>
           <tr>
             <th>Nom</th>
             <th>Prenom</th>
+            <th>Genre</th>
+            <th>Date de naissance</th>
           </tr>
         </thead>
 ";
@@ -40,6 +42,8 @@ foreach($clients as $client)
   echo   "<tr>
       <td>{$client['nom']}</td>
       <td>{$client['prenom']}</td>
+      <td>{$client['genre']}</td>
+      <td>{$client['date_de_naissance']}</td>
     </tr>";
 }
 
