@@ -10,16 +10,16 @@ $resultatNbClients = $connexion->query($requeteNbClients);
 $nbClient = $resultatNbClients->fetch(PDO::FETCH_COLUMN);
 
 //initialisation des variables pour la pagination
-// offset : décalage qui est l
-// quantity : la quantité d'enregistrements qu'on va afficher par page
+// offset : décalage
+// limit : la quantité d'enregistrements qu'on va afficher par page
 $offset = 0;
-$quantity = 5;
+$limit = 5;
 
 //on compte le nombre de page
-$nbPages = ceil($nbClient/$quantity);
+$nbPages = ceil($nbClient/$limit);
 
 //requête pour récupérer les clients
-$requeteClient = "select * from clients limit $offset, $quantity";
+$requeteClient = "select * from clients limit $limit offset $offset";
 
 //on execute et récupère les résultats de la requête
 $clients = $connexion->query($requeteClient);

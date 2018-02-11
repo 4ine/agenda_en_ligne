@@ -4,7 +4,6 @@ $user = 'root';
 $password = 'samueloo';
 
 //attrape une exception potentielle
-
 try{
   //connexion à la BDD
   $connexion = new PDO($dsn, $user, $password);
