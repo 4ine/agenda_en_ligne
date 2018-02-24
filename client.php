@@ -6,71 +6,80 @@ $genre = [
   2 => 'homme',
   3 => 'autre'
 ];
+
 //Vérifie si la propriété page existe, si elle existe on la renvoie
-// en convertisant le resultat en int sinon on retourne la page 1
+//en convertissant le resultat en int sinon on retourne la page 1
 $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+
+$search = !empty($_GET['search']) ? $_GET['search'] : null;
 
 //coalesce en php, on prend la premiere valeur si elle existe
 //et si elle est différente de null sinon on renvoie la valeur
-// suivante. Ce code fait la même chose que celui du dessus.
+//suivante. Ce code fait la même chose que celui du dessus.
 //$page = $_GET['page'] ?? 1;
-
-$nom = $_GET['nom'] ?? null;
-$prenom = $_GET['prenom'] ?? null;
-
-
-//requête pour récupérer le nombre de client en bdd
-$requeteNbClients = "select count(*) as nbre from clients";
-//execute et récupère les résulats de la requête
-$resultatNbClients = $connexion->query($requeteNbClients);
-//on récupère la première ligne du résultat (pas besoin de boucler car count ne retourne qu'une seule
-//ligne)
-$nbClient = $resultatNbClients->fetch(PDO::FETCH_COLUMN);
 
 //initialisation des variables pour la pagination
 // limit : la quantité d'enregistrements qu'on va afficher par page
-// offset : décalage
 $limit = 5;
-
-//décalage
+// offset : décalage
 $offset = ($page-1)*$limit ;
+
+//requête pour récupérer les clients
+$requeteClient = "select * from clients";
+if(null !== $search)
+{
+  $recherche = " where nom like :search or prenom like :search ";
+  $requeteClient .= $recherche;
+}
+$requeteClient .= " limit :limit offset :offset";
+
+//preparation d'une requête (on récupère un object PDOStatement)
+$clientSth = $connexion->prepare($requeteClient);
+if(null !== $search)
+{
+  $clientSth->bindValue(':search',  "%" . $search. "%");
+}
+//associer les paramètres limit et offset aux valeurs
+$clientSth->bindParam('limit', $limit, \PDO::PARAM_INT);
+$clientSth->bindParam('offset', $offset, \PDO::PARAM_INT);
+//on execute la requête
+$clientSth->execute();
+
+
+##### REQUETE PAGINATION
+//requête pour récupérer le nombre de client en bdd
+$requeteNbClients = "select count(*) as nbre from clients";
+$requeteNbClients .= isset($recherche) ? $recherche : '';
+$nbClientSth = $connexion->prepare($requeteNbClients);
+if(null !== $search)
+{
+  $nbClientSth->bindValue(':search',  "%" . $search. "%");
+}
+//execute et récupère les résulats de la requête
+$nbClientSth->execute();
+//on récupère la première ligne du résultat (pas besoin de
+//boucler car count ne retourne qu'une seule ligne)
+$nbClient = $nbClientSth->fetch(PDO::FETCH_COLUMN);
 
 //on compte le nombre de page
 $nbPages = ceil($nbClient/$limit);
 
-//requête pour récupérer les clients
-$requeteClient = "select * from clients";
-/**
-if(null !== $nom) {
-    $requeteClient .= " where nom like '%$nom%' ";
-}
-if(null !== $prenom) {
-  $requeteClient .= " and prenom like '%$prenom%' ";
-}
-*/
-$requeteClient .= " limit $limit offset $offset";
-
-//on execute et récupère les résultats de la requête
-$clients = $connexion->query($requeteClient);
 
 include('partials/header.php');
 ?>
-<form action="client.php" method="POST">
-  <div class="form-group">
-    <label for="nom">Nom</label>
-    <input type="text" name="recherche[nom]" class="form-control" id="nom" placeholder="recherche nom">
+<form action="client.php" method="GET" class="form-inline">
+  <label class="sr-only" for="search">Nom/Prénom</label>
+  <input type="text" class="form-control mb-2 mr-sm-2 mb-sm-0"
+  name="search" id="search" placeholder="recherche nom/prénom">
+  <div class="form-check mb-2 mr-sm-2 mb-sm-0">
+    <label class="form-check-label">
+      <input class="form-check-input" type="checkbox"> Remember me
+    </label>
   </div>
-  <div class="form-group">
-    <label for="prenom">Prénom</label>
-    <input type="text" name="recherche[prenom]" class="form-control" id="prenom" placeholder="recherche prenom">
-  </div>
-  <button type="submit" class="btn btn-primary">Submit</button>
+  <button type="submit" class="btn btn-primary">Rechercher</button>
 </form>
-
-
+<br />
 <?php
-
-
 
 echo "<table class='table table-striped'>
         <thead class='thead-inverse'>
@@ -83,7 +92,7 @@ echo "<table class='table table-striped'>
         </thead>
 ";
 
-foreach($clients as $client)
+foreach($clientSth as $client)
 {
   $g = isset($genre[$client['genre']]) ? $genre[$client['genre']] : 'N/D';
   echo   "<tr>
@@ -93,8 +102,6 @@ foreach($clients as $client)
       <td>{$client['date_de_naissance']}</td>
     </tr>";
 }
-
-
 echo "</table>";
 
 echo "<nav aria-label='Page navigation example'>";
