@@ -72,9 +72,16 @@ include('partials/header.php');
   <input type="text" class="form-control mb-2 mr-sm-2 mb-sm-0"
   name="search" id="search" placeholder="recherche nom/prénom">
   <div class="form-check mb-2 mr-sm-2 mb-sm-0">
-    <label class="form-check-label">
-      <input class="form-check-input" type="checkbox"> Remember me
-    </label>
+    <select class="form-control" id="genre" name="genre">
+     <option value=''>-- genre --</option>
+     <?php
+     foreach($genre as $cle => $valeur)
+     {
+       echo "<option value='$cle'>$valeur</option>";
+     }
+
+     ?>
+   </select>
   </div>
   <button type="submit" class="btn btn-primary">Rechercher</button>
 </form>
@@ -106,7 +113,7 @@ echo "</table>";
 
 echo "<nav aria-label='Page navigation example'>";
 echo "<ul class='pagination'>";
-if(1 != $page) {
+if(1 != $page && count($page)> 1) {
   echo "<li class='page-item'><a class='page-link' href='client.php?page=".($page-1)."'>Previous</a></li>";
 }
 
@@ -114,7 +121,7 @@ if(1 != $page) {
   {
     echo "<li class='page-item'><a class='page-link' href='client.php?page=$i'>$i</a></li>";
   }
-if(20 != $page)
+if(20 != $page && count($page)> 1)
 {
   echo "<li class='page-item'><a class='page-link' href='client.php?page=".($page+1)."'>Next</a></li>";
 }
