@@ -1,31 +1,23 @@
 <?php
 include('connect.php');
+// on crée un tableau contenant la liste des genres (clé => valeur)
 $genre = [
   1 => 'femme',
   2 => 'homme',
   3 => 'autre'
 ];
+//Vérifie si la propriété page existe, si elle existe on la renvoie
+// en convertisant le resultat en int sinon on retourne la page 1
+$page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
 
-$recherche = $_POST['recherche'];
-foreach($recherche as $key => $r)
-{
-  if(empty($r)){
-    unset($recherche[$key]);
-  }
-}
+//coalesce en php, on prend la premiere valeur si elle existe
+//et si elle est différente de null sinon on renvoie la valeur
+// suivante. Ce code fait la même chose que celui du dessus.
+//$page = $_GET['page'] ?? 1;
 
-$recherche = array_filter($_POST['recherche'], function($prop){
- return !empty($prop);
-});
-echo "<pre>";
-print_r($recherche);
-exit;
 $nom = $_GET['nom'] ?? null;
 $prenom = $_GET['prenom'] ?? null;
 
-$page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
-//même chose que la ligne du dessus
-// $page = $_GET['page'] ?? 1;
 
 //requête pour récupérer le nombre de client en bdd
 $requeteNbClients = "select count(*) as nbre from clients";
@@ -48,14 +40,16 @@ $nbPages = ceil($nbClient/$limit);
 
 //requête pour récupérer les clients
 $requeteClient = "select * from clients";
+/**
 if(null !== $nom) {
     $requeteClient .= " where nom like '%$nom%' ";
 }
 if(null !== $prenom) {
   $requeteClient .= " and prenom like '%$prenom%' ";
 }
-$requeteClient .= "limit $limit offset $offset";
-echo $requeteClient;
+*/
+$requeteClient .= " limit $limit offset $offset";
+
 //on execute et récupère les résultats de la requête
 $clients = $connexion->query($requeteClient);
 
