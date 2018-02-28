@@ -1,7 +1,7 @@
 <?php
 include('connect.php');
 // on crée un tableau contenant la liste des genres (clé => valeur)
-$genre = [
+$arrayGenre = [
   1 => 'femme',
   2 => 'homme',
   3 => 'autre'
@@ -12,6 +12,8 @@ $genre = [
 $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
 
 $search = !empty($_GET['search']) ? $_GET['search'] : null;
+
+$genre = !empty($_GET['genre']) ? (int)$_GET['genre'] : null;
 
 //coalesce en php, on prend la premiere valeur si elle existe
 //et si elle est différente de null sinon on renvoie la valeur
@@ -26,18 +28,29 @@ $offset = ($page-1)*$limit ;
 
 //requête pour récupérer les clients
 $requeteClient = "select * from clients";
+$recherche = '';
 if(null !== $search)
 {
-  $recherche = " where nom like :search or prenom like :search ";
-  $requeteClient .= $recherche;
+  $recherche .= " where nom like :search or prenom like :search ";
 }
+if(null !== $genre)
+{
+    $recherche .= empty($recherche) ? ' where ' : ' and ';
+    $recherche .= " genre = :genre ";
+}
+//ajoute les conditions à la requête
+$requeteClient .= $recherche;
 $requeteClient .= " limit :limit offset :offset";
 
 //preparation d'une requête (on récupère un object PDOStatement)
 $clientSth = $connexion->prepare($requeteClient);
 if(null !== $search)
 {
-  $clientSth->bindValue(':search',  "%" . $search. "%");
+  $clientSth->bindValue('search',  "%" . $search. "%");
+}
+if(null !== $genre)
+{
+    $clientSth->bindParam('genre',  $genre, \PDO::PARAM_INT);
 }
 //associer les paramètres limit et offset aux valeurs
 $clientSth->bindParam('limit', $limit, \PDO::PARAM_INT);
@@ -55,6 +68,10 @@ if(null !== $search)
 {
   $nbClientSth->bindValue(':search',  "%" . $search. "%");
 }
+if(null !== $genre)
+{
+    $nbClientSth->bindParam('genre',  $genre, \PDO::PARAM_INT);
+}
 //execute et récupère les résulats de la requête
 $nbClientSth->execute();
 //on récupère la première ligne du résultat (pas besoin de
@@ -70,14 +87,17 @@ include('partials/header.php');
 <form action="client.php" method="GET" class="form-inline">
   <label class="sr-only" for="search">Nom/Prénom</label>
   <input type="text" class="form-control mb-2 mr-sm-2 mb-sm-0"
-  name="search" id="search" placeholder="recherche nom/prénom">
+  name="search" id="search" placeholder="recherche nom/prénom"
+  value="<?php echo $_GET['search'] ?? '' ?>"
+  >
   <div class="form-check mb-2 mr-sm-2 mb-sm-0">
     <select class="form-control" id="genre" name="genre">
      <option value=''>-- genre --</option>
      <?php
-     foreach($genre as $cle => $valeur)
+     foreach($arrayGenre as $cle => $valeur)
      {
-       echo "<option value='$cle'>$valeur</option>";
+       $selected = $genre == $cle ? 'selected' : '';
+       echo "<option $selected value='$cle'>$valeur</option>";
      }
 
      ?>
@@ -101,7 +121,7 @@ echo "<table class='table table-striped'>
 
 foreach($clientSth as $client)
 {
-  $g = isset($genre[$client['genre']]) ? $genre[$client['genre']] : 'N/D';
+  $g = isset($arrayGenre[$client['genre']]) ? $arrayGenre[$client['genre']] : 'N/D';
   echo   "<tr>
       <td>{$client['nom']}</td>
       <td>{$client['prenom']}</td>
