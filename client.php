@@ -98,7 +98,6 @@ include('partials/header.php');
   <?php echo $message; ?>
   </div>
 <?php endif; ?>
-
 <form action="client.php" method="GET" class="form-inline">
   <label class="sr-only" for="search">Nom/Prénom</label>
   <input type="text" class="form-control mb-2 mr-sm-2 mb-sm-0"
@@ -120,7 +119,13 @@ include('partials/header.php');
   </div>
   <button type="submit" class="btn btn-primary">Rechercher</button>
 </form>
-<br />
+<br>
+<div class="text-right">
+  <a href="client_edit.php">
+    <button class="btn btn-primary">Ajouter</button>
+  </a>
+</div>
+<br>
 <?php
 
 echo "<table class='table table-striped'>
