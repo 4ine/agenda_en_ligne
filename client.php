@@ -1,4 +1,5 @@
 <?php
+session_start();
 include('connect.php');
 // on crée un tableau contenant la liste des genres (clé => valeur)
 $arrayGenre = [
@@ -6,6 +7,13 @@ $arrayGenre = [
   2 => 'homme',
   3 => 'autre'
 ];
+$message = null;
+if(isset($_SESSION['suppression_client']))
+{
+  $message = $_SESSION['suppression_client'];
+  unset($_SESSION['suppression_client']);
+}
+
 
 //Vérifie si la propriété page existe, si elle existe on la renvoie
 //en convertissant le resultat en int sinon on retourne la page 1
@@ -83,7 +91,14 @@ $nbPages = ceil($nbClient/$limit);
 
 
 include('partials/header.php');
+
 ?>
+<?php if(null !== $message): ?>
+  <div class="alert alert-danger" role="alert">
+  <?php echo $message; ?>
+  </div>
+<?php endif; ?>
+
 <form action="client.php" method="GET" class="form-inline">
   <label class="sr-only" for="search">Nom/Prénom</label>
   <input type="text" class="form-control mb-2 mr-sm-2 mb-sm-0"
@@ -115,6 +130,7 @@ echo "<table class='table table-striped'>
             <th>Prenom</th>
             <th>Genre</th>
             <th>Date de naissance</th>
+            <th>Action</th>
           </tr>
         </thead>
 ";
@@ -127,6 +143,12 @@ foreach($clientSth as $client)
       <td>{$client['prenom']}</td>
       <td>$g</td>
       <td>{$client['date_de_naissance']}</td>
+      <td>
+        <a href='client_supprimer.php?id=".$client['id_client'] ."'>
+          <button class='btn btn-danger'>Supprimer</button>
+        </a>
+        <button class='btn btn-primary'>Consulter</button>
+      </td>
     </tr>";
 }
 echo "</table>";
