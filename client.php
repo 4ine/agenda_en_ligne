@@ -1,12 +1,7 @@
 <?php
 session_start();
 include('connect.php');
-// on crée un tableau contenant la liste des genres (clé => valeur)
-$arrayGenre = [
-  1 => 'femme',
-  2 => 'homme',
-  3 => 'autre'
-];
+include('genre.php');
 $message = null;
 if(isset($_SESSION['suppression_client']))
 {
@@ -122,7 +117,7 @@ include('partials/header.php');
 <br>
 <div class="text-right">
   <a href="client_edit.php">
-    <button class="btn btn-primary">Ajouter</button>
+    <button class="btn btn-primary">Ajouter un client</button>
   </a>
 </div>
 <br>
