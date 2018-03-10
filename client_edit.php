@@ -2,6 +2,7 @@
 session_start();
 include('connect.php');
 include('genre.php');
+//si le formulaire est envoyé on ajoute les informations en BDD
 if($_POST) {
   //le template de la requête sql
   $requeteInsertClient = "insert into clients (nom, prenom, genre, date_de_naissance, email, telephone)
