@@ -3,9 +3,12 @@ session_start();
 include('connect.php');
 include('genre.php');
 if($_POST) {
+  //le template de la requête sql
   $requeteInsertClient = "insert into clients (nom, prenom, genre, date_de_naissance, email, telephone)
   values (:nom, :prenom, :genre, :date_de_naissance, :email, :telephone)";
+  //preparation de la requête
   $insertClientSth = $connexion->prepare($requeteInsertClient);
+  //liaison des noms avec les variables adéquates
   $insertClientSth->bindParam('nom', $_POST['nom']);
   $insertClientSth->bindParam('prenom', $_POST['prenom']);
   $insertClientSth->bindParam('genre', $_POST['genre']);
@@ -13,16 +16,20 @@ if($_POST) {
   $insertClientSth->bindParam('email', $_POST['email']);
   $insertClientSth->bindParam('telephone', $_POST['telephone']);
 
+  //execution de la requête
   $insertClientSth->execute();
 
+  //retourne le nombre de lignes affectées par la fonction execute
   if(0 < $insertClientSth->rowCount()) {
+    //Convertit tous les caractères éligibles en entités HTML
     $nom = htmlentities($_POST['nom']);
     $prenom = htmlentities($_POST['prenom']);
+    //on crée un tableau avec le message d'ajout et la couleur du conteneur du message
     $_SESSION['message'] = [
       'message' => "Le client $nom $prenom a été ajouté",
       'color' => 'success',
     ];
-
+    //on redirige vers la page d'accueil
     header('location: client.php');
   }
 }

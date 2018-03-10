@@ -15,7 +15,7 @@ $connexion->prepare($requeteSuppClient);
 //liaison du nom ':id' à la variable id
 $suppressionSth->bindParam('id', $id, PDO::PARAM_INT);
 
-//si la suppression a fonctionné, on ajoute un message
+//execution de la requête
 $suppressionSth->execute();
 
 //Retourne le nombre de lignes affectées par le dernier appel à la fonction PDOStatement::execute()

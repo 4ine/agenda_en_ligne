@@ -13,3 +13,4 @@
 - [Requêtes du 08/02/2018](sql_request/request-2018_02_08.md)
 - [Requêtes du 22/02/2018](sql_request/request-2018_02_22.md)
 - [Requêtes du 01/03/2018](sql_request/request-2018_03_01.md)
+- Pas de requête pour le cours du 08/03/2018
