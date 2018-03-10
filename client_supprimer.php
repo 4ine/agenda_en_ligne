@@ -23,7 +23,10 @@ $rowCount = $suppressionSth->rowCount();
 
 //s'il y a au moins une ligne qui a été supprimée on indique un message
 if(0 < $rowCount) {
-  $_SESSION['suppression_client'] = "le client a été supprimé";
+  $_SESSION['message'] = [
+    'color' => 'danger',
+    'message' => 'Le client a été supprimé',
+  ];
 }
 
 }

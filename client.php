@@ -3,10 +3,10 @@ session_start();
 include('connect.php');
 include('genre.php');
 $message = null;
-if(isset($_SESSION['suppression_client']))
+if(isset($_SESSION['message']))
 {
-  $message = $_SESSION['suppression_client'];
-  unset($_SESSION['suppression_client']);
+  $message = $_SESSION['message'];
+  unset($_SESSION['message']);
 }
 
 
@@ -89,8 +89,9 @@ include('partials/header.php');
 
 ?>
 <?php if(null !== $message): ?>
-  <div class="alert alert-danger" role="alert">
-  <?php echo $message; ?>
+  <?php $color = $message['color'] ?? 'primary' ?>
+  <div class="alert alert-<?php echo $color ?>" role="alert">
+  <?php echo $message['message']; ?>
   </div>
 <?php endif; ?>
 <form action="client.php" method="GET" class="form-inline">

@@ -2,8 +2,29 @@
 session_start();
 include('connect.php');
 include('genre.php');
-if($_POST){
-  print_r($_POST);exit;
+if($_POST) {
+  $requeteInsertClient = "insert into clients (nom, prenom, genre, date_de_naissance, email, telephone)
+  values (:nom, :prenom, :genre, :date_de_naissance, :email, :telephone)";
+  $insertClientSth = $connexion->prepare($requeteInsertClient);
+  $insertClientSth->bindParam('nom', $_POST['nom']);
+  $insertClientSth->bindParam('prenom', $_POST['prenom']);
+  $insertClientSth->bindParam('genre', $_POST['genre']);
+  $insertClientSth->bindParam('date_de_naissance', $_POST['date_de_naissance']);
+  $insertClientSth->bindParam('email', $_POST['email']);
+  $insertClientSth->bindParam('telephone', $_POST['telephone']);
+
+  $insertClientSth->execute();
+
+  if(0 < $insertClientSth->rowCount()) {
+    $nom = htmlentities($_POST['nom']);
+    $prenom = htmlentities($_POST['prenom']);
+    $_SESSION['message'] = [
+      'message' => "Le client $nom $prenom a été ajouté",
+      'color' => 'success',
+    ];
+
+    header('location: client.php');
+  }
 }
 
 include('partials/header.php');
@@ -37,6 +58,18 @@ include('partials/header.php');
     <label for="date_de_naissance" class="col-2 col-form-label">Date de naissance</label>
     <div class="col-10">
       <input class="form-control" type="date" name="date_de_naissance" value="" id="date_de_naissance">
+    </div>
+  </div>
+  <div class="form-group row">
+    <label for="email" class="col-2 col-form-label">Email</label>
+    <div class="col-10">
+      <input class="form-control" type="text" name="email" value="" id="email">
+    </div>
+  </div>
+  <div class="form-group row">
+    <label for="telephone" class="col-2 col-form-label">telephone</label>
+    <div class="col-10">
+      <input class="form-control" type="text" name="telephone" value="" id="telephone">
     </div>
   </div>
   <div class="form-group row">
