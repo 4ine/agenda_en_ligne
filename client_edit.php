@@ -30,9 +30,15 @@ if($_POST) {
       'message' => "Le client $nom $prenom a été ajouté",
       'color' => 'success',
     ];
-    //on redirige vers la page d'accueil
-    header('location: client.php');
+  } else {
+      $errorMessage = $insertClientSth->errorInfo();
+      $_SESSION['message'] = [
+        'message' => $errorMessage[2],
+        'color' => 'danger',
+      ];
   }
+  //on redirige vers la page d'accueil
+  header('location: client.php');
 }
 
 include('partials/header.php');
@@ -54,7 +60,7 @@ include('partials/header.php');
     <label for="genre" class="col-2 col-form-label">Genre</label>
     <div class="col-10">
       <select name="genre" class="form-control" id="genre">
-           <option>N/D</option>
+           <option value="0">N/D</option>
            <?php foreach($arrayGenre as $cle => $genre): ?>
              <option value='<?php echo $cle ?>'><?php echo $genre ?></option>
            <?php endforeach; ?>

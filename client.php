@@ -140,8 +140,8 @@ foreach($clientSth as $client)
 {
   $g = isset($arrayGenre[$client['genre']]) ? $arrayGenre[$client['genre']] : 'N/D';
   echo   "<tr>
-      <td>{$client['nom']}</td>
-      <td>{$client['prenom']}</td>
+      <td>".htmlspecialchars($client['nom'])."</td>
+      <td>".htmlspecialchars($client['prenom'])."</td>
       <td>$g</td>
       <td>{$client['date_de_naissance']}</td>
       <td>
