@@ -148,7 +148,9 @@ foreach($clientSth as $client)
         <a href='client_supprimer.php?id=".$client['id_client'] ."'>
           <button class='btn btn-danger'>Supprimer</button>
         </a>
-        <button class='btn btn-primary'>Consulter</button>
+        <a href='client_edit.php?id=".$client['id_client']."'>
+          <button class='btn btn-primary'>Editer</button>
+        </a>
       </td>
     </tr>";
 }
