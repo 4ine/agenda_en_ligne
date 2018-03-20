@@ -35,7 +35,7 @@ if($_POST) {
     'nom' => $_POST['nom'],
     'prenom' => $_POST['prenom'],
     'genre' => $_POST['genre'],
-    'date_de_naissance' => $_POST['nomdate_de_naissance'],
+    'date_de_naissance' => $_POST['date_de_naissance'],
     'email' => $_POST['email'],
     'telephone' => $_POST['telephone'],
   ]);
@@ -101,7 +101,7 @@ action="client_edit.php<?= (isset($client['id_client'])) ? '?id='.$client['id_cl
     </div>
   </div>
   <div class="form-group row">
-    <label for="telephone" class="col-2 col-form-label">telephone</label>
+    <label for="telephone" class="col-2 col-form-label">Telephone</label>
     <div class="col-10">
       <input class="form-control" type="text" name="telephone" value="<?= $client['telephone'] ?? '' ?>" id="telephone">
     </div>
