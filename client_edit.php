@@ -50,7 +50,7 @@ if($_POST) {
     $prenom = htmlspecialchars($_POST['prenom']);
     //on crée un tableau avec le message d'ajout et la couleur du conteneur du message
     $_SESSION['message'] = [
-      'message' => "Le client $nom $prenom a été ajouté",
+      'message' => "Le client $nom $prenom a été ". ( $client ? 'modifié' : 'ajouté'),
       'color' => 'success',
     ];
   } else {
