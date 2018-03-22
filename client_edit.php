@@ -17,9 +17,20 @@ $client = $clientSth->fetch(PDO::FETCH_ASSOC);
 
 //si le formulaire est envoyé on ajoute les informations en BDD
 if($_POST) {
+  $data = [
+    'nom' => $_POST['nom'],
+    'prenom' => $_POST['prenom'],
+    'genre' => $_POST['genre'],
+    'date_de_naissance' => $_POST['date_de_naissance'],
+    'email' => $_POST['email'],
+    'telephone' => $_POST['telephone'],
+  ];
   //Si le client existe on le met à jour.
   if($client){
-
+      $requeteClient = "update clients set nom=:nom, prenom=:prenom, genre=:genre,
+      date_de_naissance=:date_de_naissance, email=:email, telephone=:telephone
+      where id_client=:id";
+      $data['id'] = $client['id_client'];
   }
   //si le client n'existe pas on crée un nouvel enregistrement.
   else {
@@ -31,14 +42,7 @@ if($_POST) {
   //preparation de la requête
   $clientSth = $connexion->prepare($requeteClient);
   //on bin les paramètres directement dans la methode execute
-  $clientSth->execute([
-    'nom' => $_POST['nom'],
-    'prenom' => $_POST['prenom'],
-    'genre' => $_POST['genre'],
-    'date_de_naissance' => $_POST['date_de_naissance'],
-    'email' => $_POST['email'],
-    'telephone' => $_POST['telephone'],
-  ]);
+  $clientSth->execute($data);
   //retourne le nombre de lignes affectées par la fonction execute
   if(0 < $clientSth->rowCount()) {
     //Convertit tous les caractères éligibles en entités HTML
