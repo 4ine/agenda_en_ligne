@@ -113,6 +113,21 @@ action="client_edit.php<?= (isset($client['id_client'])) ? '?id='.$client['id_cl
       <input class="form-control" type="text" name="telephone" value="<?= $client['telephone'] ?? '' ?>" id="telephone">
     </div>
   </div>
+<?php if($client): ?>
+  <div class="form-group row">
+    <label class="col-2 col-form-label">Date création</label>
+    <div class="col-10">
+      <?php
+      if(null === $client['date_creation']) {
+        echo 'N/D';
+      } else {
+        $date = new \DateTime($client['date_creation']);
+        echo $date->format('d/m/Y à H:m');
+      }
+      ?>
+    </div>
+  </div>
+<?php endif; ?>
   <div class="form-group row">
       <div class="col-md-6">
         <a href="client.php">
