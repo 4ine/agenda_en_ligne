@@ -25,32 +25,35 @@ if($_POST) {
     'email' => $_POST['email'],
     'telephone' => $_POST['telephone'],
   ];
+  //Convertit tous les caractères éligibles en entités HTML
+  $nom = htmlspecialchars($_POST['nom']);
+  $prenom = htmlspecialchars($_POST['prenom']);
   //Si le client existe on le met à jour.
   if($client){
       $requeteClient = "update clients set nom=:nom, prenom=:prenom, genre=:genre,
       date_de_naissance=:date_de_naissance, email=:email, telephone=:telephone
       where id_client=:id";
       $data['id'] = $client['id_client'];
+      $message= "Le client $nom $prenom a été modifé";
   }
   //si le client n'existe pas on crée un nouvel enregistrement.
   else {
     //le template de la requête sql
     $requeteClient = "insert into clients (nom, prenom, genre, date_de_naissance, email, telephone)
     values (:nom, :prenom, :genre, :date_de_naissance, :email, :telephone)";
+    $message= "Le client $nom $prenom a été ajouté";
   }
 
   //preparation de la requête
   $clientSth = $connexion->prepare($requeteClient);
   //on bin les paramètres directement dans la methode execute
   $clientSth->execute($data);
+
   //retourne le nombre de lignes affectées par la fonction execute
   if(0 < $clientSth->rowCount()) {
-    //Convertit tous les caractères éligibles en entités HTML
-    $nom = htmlspecialchars($_POST['nom']);
-    $prenom = htmlspecialchars($_POST['prenom']);
     //on crée un tableau avec le message d'ajout et la couleur du conteneur du message
     $_SESSION['message'] = [
-      'message' => "Le client $nom $prenom a été ". ( $client ? 'modifié' : 'ajouté'),
+      'message' => $message,
       'color' => 'success',
     ];
   } else {
