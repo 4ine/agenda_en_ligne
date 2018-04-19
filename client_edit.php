@@ -2,7 +2,7 @@
 session_start();
 include('connect.php');
 include('genre.php');
-
+$message = null;
 //verifier si l'id d'un client est envoyé
 if(isset($_GET['id'])) {
 $clientSth = $connexion->prepare("select * from clients where id_client=:id");
@@ -56,19 +56,25 @@ if($_POST) {
       'message' => $message,
       'color' => 'success',
     ];
+    //on redirige vers la page d'accueil
+    header('location: client.php');
   } else {
       $errorMessage = $clientSth->errorInfo();
-      $_SESSION['message'] = [
+      $message = [
         'message' => $errorMessage[2],
         'color' => 'danger',
       ];
   }
-  //on redirige vers la page d'accueil
-  header('location: client.php');
-}
+  }
 
 include('partials/header.php');
 ?>
+<?php if(null !== $message): ?>
+  <?php $color = $message['color'] ?? 'primary' ?>
+  <div class="alert alert-<?php echo $color ?>" role="alert">
+  <?php echo $message['message']; ?>
+  </div>
+<?php endif; ?>
 <form
 action="client_edit.php<?= (isset($client['id_client'])) ? '?id='.$client['id_client'] : '' ?>" method="post">
   <div class="form-group row">
