@@ -1,5 +1,5 @@
 <?php
-$dsn = 'mysql:dbname=agenda_en_ligne;host=localhost';
+$dsn = 'mysql:dbname=agenda_en_ligne_v2;host=localhost';
 $user = 'root';
 $password = 'samueloo';
 

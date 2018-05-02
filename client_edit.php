@@ -3,17 +3,29 @@ session_start();
 include('connect.php');
 include('genre.php');
 $message = null;
+if(isset($_SESSION['message'])) {
+  $message = $_SESSION['message'];
+  unset($_SESSION['message']);
+}
 $client = null;
+$adresses = [];
 //verifier si l'id d'un client est envoyé
 if(isset($_GET['id'])) {
-$clientSth = $connexion->prepare("select * from clients where id_client=:id");
-$clientSth->execute([
-  'id' => $_GET['id'],
-]);
-if(0 === $clientSth->rowCount()) {
-  header('location: client.php');
-}
-$client = $clientSth->fetch(PDO::FETCH_ASSOC);
+  $clientSth = $connexion->prepare("select * from clients where id_client=:id");
+  $clientSth->execute([
+    'id' => $_GET['id'],
+  ]);
+  if(0 === $clientSth->rowCount()) {
+    header('location: client.php');
+  }
+  $client = $clientSth->fetch(PDO::FETCH_ASSOC);
+
+  //récuperation des adresses du client
+  $adresseSth = $connexion->prepare("select * from adresse where clients_id_client=:id");
+  $adresseSth->execute([
+    'id' => $_GET['id'],
+  ]);
+  $adresses = $adresseSth->fetchAll(PDO::FETCH_ASSOC);
 }
 
 //si le formulaire est envoyé on ajoute les informations en BDD
@@ -30,7 +42,7 @@ if($_POST) {
   $nom = htmlspecialchars($_POST['nom']);
   $prenom = htmlspecialchars($_POST['prenom']);
   //Si le client existe on le met à jour.
-  if($client){
+  if($client) {
       $requeteClient = "update clients set nom=:nom, prenom=:prenom, genre=:genre,
       date_de_naissance=:date_de_naissance, email=:email, telephone=:telephone
       where id_client=:id";
@@ -135,6 +147,31 @@ action="client_edit.php<?= (isset($client['id_client'])) ? '?id='.$client['id_cl
     </div>
   </div>
 <?php endif; ?>
+
+<?php if (isset($client['id_client'])): ?>
+  <div class="row">
+    <div class="col-12 text-right">
+      <a href="adresse_edit.php?id_client=<?= $client['id_client'] ?>">
+        <button type="button" class="btn btn-success">Ajouter une adresse</button>
+      </a>
+    </div>
+
+  <?php foreach($adresses as $key => $adresse): ?>
+    <div class="col-4">
+      <div class="card" style="width: 18rem;">
+        <div class="card-body">
+          <h5 class="card-title">Adresse n°<?= ($key+1) ?></h5>
+          <p class="card-text"><?= $adresse['rue'] . ' n°' . $adresse['numero'] . ', ' . $adresse['code_postal'] . ' ' . $adresse['ville'] ?></p>
+          <a href="adresse_edit.php?id=<?= $adresse['id_adresse'] ?>&id_client=<?= $client['id_client']?>" class="card-link">Modifier</a>
+          <a href="adresse_supprimer.php?id_client=<?= $client['id_client']?>&id=<?= $adresse['id_adresse'] ?>" class="card-link">Supprimer</a>
+        </div>
+      </div>
+    </div>
+  <?php endforeach; ?>
+  </div>
+  <br />
+<?php endif; ?>
+
   <div class="form-group row">
       <div class="col-md-6">
         <a href="client.php">

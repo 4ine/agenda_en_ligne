@@ -3,8 +3,7 @@ session_start();
 include('connect.php');
 include('genre.php');
 $message = null;
-if(isset($_SESSION['message']))
-{
+if(isset($_SESSION['message'])) {
   $message = $_SESSION['message'];
   unset($_SESSION['message']);
 }
