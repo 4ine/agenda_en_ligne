@@ -3,6 +3,7 @@ session_start();
 include('connect.php');
 include('genre.php');
 $message = null;
+$histos = [];
 if(isset($_SESSION['message'])) {
   $message = $_SESSION['message'];
   unset($_SESSION['message']);
@@ -19,6 +20,14 @@ if(isset($_GET['id'])) {
     header('location: client.php');
   }
   $client = $clientSth->fetch(PDO::FETCH_ASSOC);
+
+
+  //récupération de l'historique du client
+  $histoSth = $connexion->prepare("SELECT  * from histo WHERE JSON_EXTRACT(raw, '$.id_client') = :id");
+  $id_client = (int) $_GET['id'];
+  $histoSth->bindParam('id',$id_client , PDO::PARAM_INT);
+  $histoSth->execute();
+  $histos = $histoSth->fetchAll(PDO::FETCH_ASSOC);
 
   //récuperation des adresses du client
   $adresseSth = $connexion->prepare("select * from adresse where clients_id_client=:id");
@@ -146,6 +155,27 @@ action="client_edit.php<?= (isset($client['id_client'])) ? '?id='.$client['id_cl
       ?>
     </div>
   </div>
+  <?php if($histos): ?>
+    <div class="form-group row">
+      <label  class="col-12 col-form-label">Histo</label>
+      <div class="col-12">
+        <ul class="list-group">
+          <?php foreach($histos as $histo): ?>
+            <?php $raw = json_decode($histo['raw']) ?>
+            <li class="list-group-item">
+                <div class="row">
+                  <div class="col-2"><?= $raw->nom ?></div>
+                  <div class="col-2"><?= $raw->prenom ?></div>
+                  <div class="col-1"><?= $raw->genre ?></div>
+                  <div class="col-3"><?= $raw->email ?></div>
+                  <div class="col-2"><?= $raw->telephone ?></div>
+                </div>
+            </li>
+          <?php endforeach; ?>
+        </ul>
+      </div>
+    </div>
+  <?php endif; ?>
 <?php endif; ?>
 
 <?php if (isset($client['id_client'])): ?>
