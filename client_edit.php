@@ -3,6 +3,7 @@ session_start();
 include('connect.php');
 include('genre.php');
 $message = null;
+$client = null;
 //verifier si l'id d'un client est envoyé
 if(isset($_GET['id'])) {
 $clientSth = $connexion->prepare("select * from clients where id_client=:id");
