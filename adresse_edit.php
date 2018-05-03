@@ -28,15 +28,40 @@ if(isset($_GET['id'])) {
 
 //si le formulaire est envoyé on ajoute les informations en BDD
 if($_POST) {
+  $data = [
+    'clients_id_client' => $_GET['id_client'],
+    'numero' => $_POST['numero'],
+    'rue' => $_POST['rue'],
+    'code_postal' => $_POST['code_postal'],
+    'ville' => $_POST['ville'],
+  ];
 
-  // * formater les données $data
+  $requeteAdresse =
+  "insert into adresse (numero, rue, code_postal, ville, clients_id_client) values
+  (:numero, :rue, :code_postal, :ville, :clients_id_client)";
+  $message = "l'adresse a été ajoutée";
 
-  // * créer le template de requête sql
+  //preparation de la requête
+  $adresseSth = $connexion->prepare($requeteAdresse);
+  //on bin les paramètres directement dans la methode execute
+  $adresseSth->execute($data);
 
-  // * executer la requête
-
-  // * rediriger sur la bonne page
-
+  //retourne le nombre de lignes affectées par la fonction execute
+  if(0 < $adresseSth->rowCount()) {
+    //on crée un tableau avec le message d'ajout et la couleur du conteneur du message
+    $_SESSION['message'] = [
+      'message' => $message,
+      'color' => 'success',
+    ];
+    //on redirige vers la page d'accueil
+    header('location: client_edit.php?id='.$_GET['id_client']);
+  } else {
+      $errorMessage = $adresseSth->errorInfo();
+      $message = [
+        'message' => $errorMessage[2],
+        'color' => 'danger',
+      ];
+  }
 }
 
 include('partials/header.php');
